@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visit-counter-app-deployment
+  labels:
+    app: visit-counter-app
+spec:
+  selector:
+    matchLabels:
+      app: visit-counter-app
+  template:
+    metadata:
+      labels:
+        app: visit-counter-app
+    spec:
+      containers:
+        - name: visit-counter-app
+          image: visit-counter-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 7777
+          resources:
+            requests: 
+              cpu: 100m
+            limits: 
+              cpu: 200m
+          env:
+            - name: PGPASS
+              valueFrom:
+                secretKeyRef:
+                  name: visit-counter-app-database-cluster-app
+                  key: pgpass
+                  optional: false
+
+# The following configuration adds a resource request for 100m CPU units per container (0.1 CPU units) and limits the
+# resource usage to 200m CPU units per container (0.2 CPU units).
+# modification essentially adds an environment variable called PGPASS to the application.

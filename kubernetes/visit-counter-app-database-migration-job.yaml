@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: visit-counter-app-database-migration-job
+spec:
+  template:
+    metadata:
+      name: visit-counter-app-database-migration-job
+    spec:
+      containers:
+        - name: visit-counter-app-database-migrations
+          image: visit-counter-app-database-migrations:latest
+          imagePullPolicy: Never
+          env:
+            - name: FLYWAY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: visit-counter-app-database-cluster-app
+                  key: username
+                  optional: false
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: visit-counter-app-database-cluster-app
+                  key: password
+                  optional: false
+      restartPolicy: Never
+  backoffLimit: 2
