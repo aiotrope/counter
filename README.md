@@ -1,5 +1,15 @@
 # counter
+
 Scaling with Kubernetes exercise
+
+Create and test an automatically scaling application that uses a PostgreSQL database and can be deployed to Kubernetes (in this case, Minikube). The application's primary functionality is that it should include a database that tracks user visits, logs each visit, and returns the total number of visits in response to each request. To record the visits, use the database schema shown below.
+
+When a user launches the program, a new item should be created to the visit_log database, and the number of rows should be extracted and returned to the user as a response. The following are the essential configuration features requested from the application:
+
+- The application is deployed using a load balancer.
+- HPA is used to scale deployments automatically.
+- Flyway migrations are used to update the schema of the database cluster.
+- Kubernetes configurations are used to deliver secrets.
 
 ## CLI Commands
 
@@ -12,14 +22,14 @@ $ minikube start
 # start a new terminal, and leave this running
 $ minikube dashboard
 
-# build the main app image 
+# build the main app image
 $ cd visit-counter-app/ && minikube image build -t visit-counter-app -f ./Dockerfile .
 
 # check available minikube; ensure that docker.io/library/hello-minikube-app:latest is present in the list
 $ minikube image list
 
 # deploy the app
-$ kubectl apply -f kubernetes/visit-counter-app-deployment.yaml 
+$ kubectl apply -f kubernetes/visit-counter-app-deployment.yaml
 
 # check current deployment
 $ kubectl get deployments
@@ -35,7 +45,7 @@ $ kubectl logs visit-counter-app-deployment-67cdb798bd-d9n7w
 # Listening on http://localhost:7777/
 
 # deploy the services and exposing the application
-$ kubectl apply -f kubernetes/visit-counter-app-service.yaml 
+$ kubectl apply -f kubernetes/visit-counter-app-service.yaml
 
 # check services
 $ kubectl get services
@@ -45,7 +55,7 @@ $ minikube service visit-counter-app-service --url
 # check the url e.g http://127.0.0.1:52140
 
 # cleaning up; delete services and deployment
-$ kubectl delete -f kubernetes/visit-counter-app-service.yaml && kubectl delete -f kubernetes/visit-counter-app-deployment.yaml 
+$ kubectl delete -f kubernetes/visit-counter-app-service.yaml && kubectl delete -f kubernetes/visit-counter-app-deployment.yaml
 
 # delete minikube
 $ minikube delete
@@ -72,7 +82,7 @@ $ minikube start --cpus 4
 # enable metric server
 $ minikube addons enable metrics-server
 
-# The following configuration adds a resource request for 100m CPU units per container (0.1 CPU units) and limits the 
+# The following configuration adds a resource request for 100m CPU units per container (0.1 CPU units) and limits the
 # resource usage to 200m CPU units per container (0.2 CPU units).
 
 # check if addon is running
@@ -100,7 +110,7 @@ $ kubectl get hpa
 $ kubectl delete hpa visit-counter-app-deployment
 
 # run hpa autoscaling
-$ kubectl apply -f kubernetes/visit-counter-app-deployment-hpa.yaml 
+$ kubectl apply -f kubernetes/visit-counter-app-deployment-hpa.yaml
 # check auto scaling config status
 
 # database scaling with PostgreSQL operator CloudNativePG
@@ -128,7 +138,7 @@ $ kubectl get services
 $ cd flyway/ && minikube image build -t visit-counter-app-database-migrations -f ./Dockerfile .
 
 # list the image; ensure the visit-counter-app-database-migrations:latest is present
-$ minikube image list 
+$ minikube image list
 
 # apply flyway migrations
 $ kubectl apply -f kubernetes/visit-counter-app-database-migration-job.yaml
@@ -138,7 +148,7 @@ $ kubectl get pods
 
 ## deployment config; after editing app.js
 $ cd visit-counter-app/ && minikube image build -t visit-counter-app -f ./Dockerfile .
-$ cd .. && kubectl apply -f kubernetes/visit-counter-app-deployment.yaml 
+$ cd .. && kubectl apply -f kubernetes/visit-counter-app-deployment.yaml
 # checks pods
 $ kubectl get pods
 
